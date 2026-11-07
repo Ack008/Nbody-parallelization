@@ -1,80 +1,23 @@
-const MAX = 10
-const UNIVERSAL_MASS = 2
-const BODY_COUNT = 5
-BODY0 = BODY[0],
-BODY[body:0..BODY_COUNT] = (
-	get_x[body] -> BODY0
-	|get_y[body]  -> BODY0
-	|get_vel_x[body]  -> BODY0
-	|get_vel_y[body]  -> BODY0
-	|apply_force[body]  -> get_vel_x[body]  -> set_vel_x[body]  -> get_vel_y[body]  -> set_vel_y[body]  -> BODY0
-	|end_step -> get_pos_x[body]  -> set_pos_x[body]  -> get_pos_y[body]  -> set_pos_y[body]  -> BODY0
+const N = 2
+range B  = 0..N-1
+range BI = 0..N          // include N come sentinella di fine
+
+BODY(I=0) = (
+	get_x[I] -> BODY
+	|get_y[I] -> BODY
+	|apply_force[I] -> get_vel_x[I] -> set_vel_x[I] -> get_vel_y[I] -> set_vel_y[I] -> BODY
+	|end_step -> get_pos_x[I] -> set_pos_x[I] -> get_pos_y[I] -> set_pos_y[I] -> BODY
 ).
 
-BODY1 = BODY[1],
-BODY[body:0..BODY_COUNT] = (
-	get_x[body] -> BODY1
-	|get_y[body]  -> BODY1
-	|get_vel_x[body]  -> BODY1
-	|get_vel_y[body]  -> BODY1
-	|apply_force[body]  -> get_vel_x[body]  -> set_vel_x[body]  -> get_vel_y[body]  -> set_vel_y[body]  -> BODY1
-	|end_step -> get_pos_x[body]  -> set_pos_x[body]  -> get_pos_y[body]  -> set_pos_y[body]  -> BODY1
-).
-
-
-BODY2 = BODY[2],
-BODY[body:0..BODY_COUNT] = (
-	get_x[body] -> BODY2
-	|get_y[body]  -> BODY2
-	|get_vel_x[body]  -> BODY2
-	|get_vel_y[body]  -> BODY2
-	|apply_force[body]  -> get_vel_x[body]  -> set_vel_x[body]  -> get_vel_y[body]  -> set_vel_y[body]  -> BODY2
-	|end_step -> get_pos_x[body]  -> set_pos_x[body]  -> get_pos_y[body]  -> set_pos_y[body]  -> BODY2
-).
-BODY3 = BODY[3],
-BODY[body:0..BODY_COUNT] = (
-	get_x[body] -> BODY3
-	|get_y[body]  -> BODY3
-	|get_vel_x[body]  -> BODY3
-	|get_vel_y[body]  -> BODY3
-	|apply_force[body]  -> get_vel_x[body]  -> set_vel_x[body]  -> get_vel_y[body]  -> set_vel_y[body]  -> BODY3
-	|end_step -> get_pos_x[body]  -> set_pos_x[body]  -> get_pos_y[body]  -> set_pos_y[body]  -> BODY3
-).
-
-BODY4 = BODY[4],
-BODY[body:0..BODY_COUNT] = (
-	get_x[body] -> BODY4
-	|get_y[body]  -> BODY4
-	|get_vel_x[body]  -> BODY4
-	|get_vel_y[body]  -> BODY4
-	|apply_force[body]  -> get_vel_x[body]  -> set_vel_x[body]  -> get_vel_y[body]  -> set_vel_y[body]  -> BODY4
-	|end_step -> get_pos_x[body]  -> set_pos_x[body]  -> get_pos_y[body]  -> set_pos_y[body]  -> BODY4
-).
-
-
-BODY5 = BODY[5],
-BODY[body:0..BODY_COUNT] = (
-	get_x[body] -> BODY5
-	|get_y[body]  -> BODY5
-	|get_vel_x[body]  -> BODY5
-	|get_vel_y[body]  -> BODY5
-	|apply_force[body]  -> get_vel_x[body]  -> set_vel_x[body]  -> get_vel_y[body]  -> set_vel_y[body]  -> BODY5
-	|end_step -> get_pos_x[body]  -> set_pos_x[body]  -> get_pos_y[body]  -> set_pos_y[body]  -> BODY5
-).
-
-
-
-SIMULATOR = BODY_TO_SIMULATE[0][BODY_COUNT],
-BODY_TO_SIMULATE[from:0..BODY_COUNT][to:0..BODY_COUNT] = (
-	simulate[from] -> SIMULATION[from][to]
+SIMULATOR = SIM[0],
+SIM[b:BI] = (
+	when (b < N)  simulate[b] -> PAIRS[b][0]
+	|when (b == N) end_step -> get_pos_x[b] -> set_pos_x[b] -> get_pos_y[b] -> set_pos_y[b] -> SIMULATOR
 ),
-SIMULATION[body:0..BODY_COUNT][to:0..BODY_COUNT] = (
-	when body < to begin -> TWO_BODY_BEGIN[body][0][to]
-),
-TWO_BODY_BEGIN[body1:0..BODY_COUNT][body2:0..BODY_COUNT + 1][to:0..BODY_COUNT] = IF body1 == body2 TWO_BODY_SIM[body1][body2+1][to] else TWO_BODY_SIM[body1][body2][to],
-TWO_BODY_SIM[body1:0..BODY_COUNT][body2:0..BODY_COUNT + 1][to:0..BODY_COUNT]  (
-	when body2 == BODY_COUNT + 1 && body1 < to end_simulation -> BODY_TO_SIMULATE[body1+1][to]
-	|when body2 == BODY_COUNT + 1 && body1 >= to end_step -> SIMULATOR
-	|when body2 < BODY_COUNT get_x[body1] -> get_x[body2] -> get_y[body1] -> get_y[body2] -> TWO_BODY_SIM[body1][body2 + 1][to]
+PAIRS[b:B][o:BI] = if (o < N && o == b) then PAIRS[b][o+1] else NEXT[b][o],
+NEXT[b:B][o:BI] = (
+	when (o == N) apply_force[b] -> get_vel_x[b] -> set_vel_x[b] -> get_vel_y[b] -> set_vel_y[b]-> SIM[b+1]
+	|when (o < N) get_x[b] -> get_x[o] -> get_y[b] -> get_y[o] -> PAIRS[b][o+1]
 ).
-||SIMULATION = (a:BODY0 || b:BODY1 || c:BODY2 || d:BODY3 || e:BODY4 || f:BODY5 || {a,b,c,d,e,f}::SIMULATOR).
+
+||SIMULATION = (a:BODY(0) || b:BODY(1) || {a,b}::SIMULATOR).
