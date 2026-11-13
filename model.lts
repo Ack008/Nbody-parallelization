@@ -1,23 +1,46 @@
-const N = 2
+const N = 4
+const NSIM = 2
 range B  = 0..N-1
 range BI = 0..N          // include N come sentinella di fine
+range SI = 0..NSIM-1
+const VEL_LOCK = 0
 
 BODY(I=0) = (
-	get_x[I] -> BODY
-	|get_y[I] -> BODY
-	|apply_force[I] -> get_vel_x[I] -> set_vel_x[I] -> get_vel_y[I] -> set_vel_y[I] -> BODY
-	|end_step -> get_pos_x[I] -> set_pos_x[I] -> get_pos_y[I] -> set_pos_y[I] -> BODY
+	begin_get_pos[sid:SI][I] -> end_get_pos[sid][I] -> BODY
+	|apply_force[I] ->
+		begin_get_vel[I] -> end_get_vel[I] ->
+		begin_set_vel[I] -> end_set_vel[I] -> end_apply[I] -> BODY
+	|end_step -> get_pos[I] ->
+		begin_set_pos[I] -> end_set_pos[I] -> restart_step -> BODY
 ).
 
-SIMULATOR = SIM[0],
-SIM[b:BI] = (
-	when (b < N)  simulate[b] -> PAIRS[b][0]
-	|when (b == N) end_step -> get_pos_x[b] -> set_pos_x[b] -> get_pos_y[b] -> set_pos_y[b] -> SIMULATOR
+SIMULATOR(K=0, F=0, L=0) = SIM[F],
+SIM[b:F..L+1] = (
+	when (b <= L)   simulate[K][b] -> PAIRS[b][0]
+	|when (b == L+1) end_step -> restart_step -> SIM[F]   // vedi nota
 ),
-PAIRS[b:B][o:BI] = if (o < N && o == b) then PAIRS[b][o+1] else NEXT[b][o],
-NEXT[b:B][o:BI] = (
-	when (o == N) apply_force[b] -> get_vel_x[b] -> set_vel_x[b] -> get_vel_y[b] -> set_vel_y[b]-> SIM[b+1]
-	|when (o < N) get_x[b] -> get_x[o] -> get_y[b] -> get_y[o] -> PAIRS[b][o+1]
+PAIRS[b:F..L][o:BI] = if (o < N && o == b) then PAIRS[b][o+1] else NEXT[b][o],
+NEXT[b:F..L][o:BI] = (
+	when (o == N) apply_force[b] -> end_apply[b] -> SIM[b+1]
+	|when (o < N) begin_get_pos[K][b] -> end_get_pos[K][b] ->
+	              begin_get_pos[K][o] -> end_get_pos[K][o] -> PAIRS[b][o+1]
 ).
 
-||SIMULATION = (a:BODY(0) || b:BODY(1) || {a,b}::SIMULATOR).
+||SIMULATION = (
+	forall[i:B] BODY(i)
+	|| SIMULATOR(0, 0, 1)     // simulatore 0: corpi 0 e 1
+	|| SIMULATOR(1, 2, 3)     // simulatore 1: corpi 2 e 3
+).
+
+
+fluent WRITING_POS[i:B]    = <begin_set_pos[i], end_set_pos[i]>
+fluent READING_POS[s:SI][i:B] = <begin_get_pos[s][i], end_get_pos[s][i]>
+
+fluent WRITING_VEL[i:B]    = <begin_set_vel[i], end_set_vel[i]>
+fluent READING_VEL[i:B]    = <begin_get_vel[i], end_get_vel[i]>
+
+assert NO_RW_POS = forall[i:B] forall[s:SI] [](!(WRITING_POS[i] && READING_POS[s][i]))
+assert NO_RW_VEL = forall[i:B] [](!(WRITING_VEL[i] && READING_VEL[i]))
+
+
+
