@@ -1,5 +1,7 @@
 package org;
+
 import java.util.List;
+
 public class Body {
     private static final double G_CONST_SCALED = 0.001;
     private P2d pos;
@@ -39,7 +41,8 @@ public class Body {
     public synchronized boolean equals(Object b) {
         return ((Body) b).id == id;
     }
-    public synchronized void calculateTotalForce(List<Body> bodies) throws InfiniteForceException {
+
+    public synchronized void calculateTotalForce(List<Body> bodies, double dt) throws InfiniteForceException {
         V2d totalForce = new V2d(0, 0);
         for (Body b : bodies) {
             if (!b.equals(this)) {
@@ -47,11 +50,13 @@ public class Body {
             }
         }
         // Do something with the total force, e.g., update the body's velocity
-        updateVelocity(totalForce, 1.0);
+        updateVelocity(totalForce, dt);
     }
+
     public synchronized void update(double dt) {
         updatePos(dt);
     }
+
     /**
      * Update the position, given the instant velocity
      * 

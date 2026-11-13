@@ -1,24 +1,33 @@
 package org;
 import java.util.List;
 public class Worker extends Thread {
-    private Body body;
-    private List<Body> bodies;
-    private double dt;
-
-    public Worker(Body body, List<Body> bodies, double dt) {
-        this.body = body;
-        this.bodies = bodies;
-        this.dt = dt;
+    private final List<Body> allBodies;
+    private final List<Body> assignedBodies;
+    private final Barrier barrier;
+    public Worker(Barrier barrier, List<Body> assignedBodies ,List<Body> allBodies) {
+        this.allBodies = allBodies;
+        this.assignedBodies = assignedBodies;
+        this.barrier = barrier;
     }
 
     @Override
     public void run() {
-        try {
-            body.calculateTotalForce(bodies);
-            body.update(dt);
-        } catch (InfiniteForceException e) {
-            e.printStackTrace();
+        double dt = barrier.getDt();
+        int maxSteps = barrier.getMaxSteps();
+        int currentStep = barrier.getCurrentStep();
+        while (currentStep < maxSteps) {
+            for (Body body : assignedBodies) {
+                try {
+                    body.calculateTotalForce(allBodies, dt);
+                } catch (InfiniteForceException e) {
+                    e.printStackTrace();
+                }
+            }   
+            barrier.waitAllDone();
+            for (Body body : assignedBodies) {
+                body.update(dt);
+            }
         }
     }
-    
+
 }
