@@ -40,5 +40,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.nbody.App"
+    mainClass = "org.SimulationThreadNoGUI"
 }

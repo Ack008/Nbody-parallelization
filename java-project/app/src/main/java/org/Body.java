@@ -23,11 +23,11 @@ public class Body {
     }
 
     public synchronized P2d getPos() {
-        return pos;
+        return new P2d(pos.getX(), pos.getY());
     }
 
     public synchronized V2d getVel() {
-        return vel;
+        return new V2d(vel);
     }
 
     public synchronized int getId() {
@@ -38,11 +38,11 @@ public class Body {
         return radius;
     }
 
-    public synchronized boolean equals(Object b) {
+    public boolean equals(Object b) {
         return ((Body) b).id == id;
     }
 
-    public synchronized void calculateTotalForce(List<Body> bodies, double dt) throws InfiniteForceException {
+    public void calculateTotalForce(List<Body> bodies, double dt) throws InfiniteForceException {
         V2d totalForce = new V2d(0, 0);
         for (Body b : bodies) {
             if (!b.equals(this)) {
@@ -53,7 +53,7 @@ public class Body {
         updateVelocity(totalForce, dt);
     }
 
-    public synchronized void update(double dt) {
+    public void update(double dt) {
         updatePos(dt);
     }
 
@@ -89,5 +89,8 @@ public class Body {
         } else {
             throw new InfiniteForceException();
         }
+    }
+    private synchronized void log(String msg) {
+        System.out.println("[" + System.currentTimeMillis() + "] " + msg);
     }
 }

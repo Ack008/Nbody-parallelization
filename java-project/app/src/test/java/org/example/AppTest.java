@@ -5,13 +5,13 @@ package org.example;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.App;
+import org.SimulationThreadNoGUI;
 import org.junit.Test;
 
 public class AppTest {
     
     @Test public void appHasAGreeting() {
-        App classUnderTest = new App();
+        SimulationThreadNoGUI classUnderTest = new SimulationThreadNoGUI();
         assertNotNull("app should have a greeting", classUnderTest.getGreeting());
     }
 }

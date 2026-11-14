@@ -1,10 +1,13 @@
 package org;
+
 import java.util.List;
+
 public class Worker extends Thread {
     private final List<Body> allBodies;
     private final List<Body> assignedBodies;
     private final Barrier barrier;
-    public Worker(Barrier barrier, List<Body> assignedBodies ,List<Body> allBodies) {
+
+    public Worker(Barrier barrier, List<Body> assignedBodies, List<Body> allBodies) {
         this.allBodies = allBodies;
         this.assignedBodies = assignedBodies;
         this.barrier = barrier;
@@ -22,12 +25,19 @@ public class Worker extends Thread {
                 } catch (InfiniteForceException e) {
                     e.printStackTrace();
                 }
-            }   
-            barrier.waitAllDone();
+            }
+            barrier.waitAllForceCalculations();
+            log("Worker " + Thread.currentThread().threadId() + " completed force calculations for step " + currentStep);
             for (Body body : assignedBodies) {
                 body.update(dt);
             }
+            barrier.waitAllUpdating();
+            currentStep = barrier.getCurrentStep();
         }
+    }
+
+    private synchronized void log(String msg) {
+        System.out.println("[" + System.currentTimeMillis() + "] " + msg);
     }
 
 }

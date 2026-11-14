@@ -1,0 +1,67 @@
+package org;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Optional;
+public class NBodySimulation {
+    private Optional<SimulationView> view;
+
+	/* bodies in the field */
+	List<Body> bodies;
+
+	/* virtual time */
+	private double vt;
+
+	/* virtual time step */
+	double dt;
+
+	public NBodySimulation(SimulationView view) {
+		this.view = Optional.of(view);
+	}
+	
+	public NBodySimulation() {
+		this.view = Optional.empty();
+	}
+	
+	public void init(ArrayList<Body> bodies) {
+		this.bodies = bodies;
+	}
+
+	public void initRandom(int nBodies) {
+		Random rand = new Random(System.currentTimeMillis());
+		bodies = new ArrayList<Body>();
+		for (int i = 0; i < nBodies; i++) {
+			double x = -1.0 + 2.0*rand.nextDouble();
+			double y = -1.0 + 2.0*rand.nextDouble();
+			double vx = -0.1 + 0.2*rand.nextDouble();
+			double vy = -0.1 + 0.2*rand.nextDouble();
+			double m = 1 + rand.nextDouble()*9;
+			Body b = new Body(i, new P2d(x, y), new V2d(vx, vy), 0.01, m);
+			bodies.add(b);
+		}
+	}
+    private List<Worker> getWorkers(int numThreads, Barrier barrier) {
+        List<Worker> workers = new ArrayList<>();
+        int bodiesPerThread = bodies.size() / numThreads;
+        for (int i = 0; i < numThreads; i++) {
+            int startIdx = i * bodiesPerThread;
+            int endIdx = (i == numThreads - 1) ? bodies.size() : startIdx + bodiesPerThread;
+            List<Body> assignedBodies = bodies.subList(startIdx, endIdx);
+            Worker worker = new Worker(barrier, assignedBodies, bodies);
+            workers.add(worker);
+        }
+        return workers;
+    }
+    public void execute(int numThreads, int maxSteps, double dt) {
+        List<Worker> workers = getWorkers(numThreads, new Barrier(numThreads, maxSteps, dt));
+        workers.forEach(i -> i.start());
+        for (Worker worker : workers) {
+            try {
+                worker.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
