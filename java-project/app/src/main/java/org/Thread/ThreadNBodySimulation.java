@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Random;
 
 import org.Body;
+import org.NBodySimulator;
 import org.P2d;
 import org.SimulationView;
 import org.V2d;
 
 import java.util.Optional;
-public class NBodySimulation {
+public class ThreadNBodySimulation implements NBodySimulator {
     private Optional<SimulationView> view;
 
 	/* bodies in the field */
@@ -22,11 +23,11 @@ public class NBodySimulation {
 	/* virtual time step */
 	double dt;
 
-	public NBodySimulation(SimulationView view) {
+	public ThreadNBodySimulation(SimulationView view) {
 		this.view = Optional.of(view);
 	}
 	
-	public NBodySimulation() {
+	public ThreadNBodySimulation() {
 		this.view = Optional.empty();
 	}
 	

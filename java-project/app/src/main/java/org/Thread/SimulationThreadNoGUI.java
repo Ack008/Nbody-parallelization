@@ -3,13 +3,15 @@
  */
 package org.Thread;
 
+import org.NBodySimulator;
+
 public class SimulationThreadNoGUI {
     static final int NUM_BODIES = 2000;
     static final int NUM_THREADS = Runtime.getRuntime().availableProcessors() + 1;
     static final int MAX_STEPS = 100;
     static final double DT = 0.01;
     public static void main(String[] args) {
-        NBodySimulation simulation = new NBodySimulation();
+        NBodySimulator simulation = new ThreadNBodySimulation();
 
         simulation.initRandom(NUM_BODIES);
         long startTime = System.currentTimeMillis();
