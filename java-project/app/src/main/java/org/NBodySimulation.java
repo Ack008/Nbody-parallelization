@@ -54,7 +54,10 @@ public class NBodySimulation {
         return workers;
     }
     public void execute(int numThreads, int maxSteps, double dt) {
-        List<Worker> workers = getWorkers(numThreads, new Barrier(numThreads, maxSteps, dt));
+		if (view.isPresent()) {
+			view.get().init();
+		}
+        List<Worker> workers = getWorkers(numThreads, new Barrier(bodies, numThreads, maxSteps, dt, view));
         workers.forEach(i -> i.start());
         for (Worker worker : workers) {
             try {

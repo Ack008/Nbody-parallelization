@@ -1,5 +1,6 @@
 package org;
-
+import java.util.List;
+import java.util.Optional;
 public class Barrier {
     private final double dt;
     private final int numThreads;
@@ -7,14 +8,23 @@ public class Barrier {
     private final int maxSteps;
     private int forcesCalculated;
     private int updatesCompleted;
+    private final Optional<SimulationView> view;
 
-    public Barrier(int numThreads, int maxSteps, double dt) {
+    private final List<Body> bodies;
+
+
+    public Barrier(List<Body> bodies, int numThreads, int maxSteps, double dt) {
+        this(bodies, numThreads, maxSteps, dt, Optional.empty());
+    }
+    public Barrier(List<Body> bodies, int numThreads, int maxSteps, double dt, Optional<SimulationView> view) {
         this.numThreads = numThreads;
         this.maxSteps = maxSteps;
         this.currentStep = 0;
         this.dt = dt;
         this.updatesCompleted = 0;
         this.forcesCalculated = 0;
+        this.view = view;
+        this.bodies = bodies;
     }
 
     public synchronized double getDt() {
@@ -33,6 +43,9 @@ public class Barrier {
         if (updatesCompleted == numThreads) {
             currentStep++;
             forcesCalculated = 0;
+            if (view.isPresent()) {
+                view.get().display(bodies, dt, currentStep);
+            }
             notifyAll();
         } else {
             while (updatesCompleted < numThreads) {
@@ -60,5 +73,4 @@ public class Barrier {
         }
 
     }
-
 }

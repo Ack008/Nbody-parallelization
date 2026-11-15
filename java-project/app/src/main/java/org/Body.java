@@ -38,7 +38,7 @@ public class Body {
         return radius;
     }
 
-    public boolean equals(Object b) {
+    public synchronized boolean equals(Object b) {
         return ((Body) b).id == id;
     }
 
@@ -49,11 +49,13 @@ public class Body {
                 totalForce.sum(computeGForceBy(b));
             }
         }
-        // Do something with the total force, e.g., update the body's velocity
-        updateVelocity(totalForce, dt);
+        V2d acc = new V2d(totalForce).scalarMul(1.0 / getMass());
+        synchronized (this) {
+            updateVelocity(acc, dt);
+        }
     }
 
-    public void update(double dt) {
+    public synchronized void update(double dt) {
         updatePos(dt);
     }
 

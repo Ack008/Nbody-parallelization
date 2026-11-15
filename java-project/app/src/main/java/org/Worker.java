@@ -27,7 +27,7 @@ public class Worker extends Thread {
                 }
             }
             barrier.waitAllForceCalculations();
-            log("Worker " + Thread.currentThread().threadId() + " completed force calculations for step " + currentStep);
+            //log("Worker " + Thread.currentThread().threadId() + " completed force calculations for step " + currentStep);
             for (Body body : assignedBodies) {
                 body.update(dt);
             }
