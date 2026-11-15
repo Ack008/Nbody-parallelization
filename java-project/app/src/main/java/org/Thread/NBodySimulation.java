@@ -1,8 +1,14 @@
-package org;
+package org.Thread;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import org.Body;
+import org.P2d;
+import org.SimulationView;
+import org.V2d;
+
 import java.util.Optional;
 public class NBodySimulation {
     private Optional<SimulationView> view;

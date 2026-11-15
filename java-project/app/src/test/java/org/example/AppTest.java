@@ -5,7 +5,7 @@ package org.example;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.SimulationThreadNoGUI;
+import org.Thread.SimulationThreadNoGUI;
 import org.junit.Test;
 
 public class AppTest {

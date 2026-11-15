@@ -1,4 +1,6 @@
-package org;
+package org.Thread;
+
+import org.SimulationView;
 
 public class SimulationThreadWithGUI {
     static final int NUM_BODIES = 200;

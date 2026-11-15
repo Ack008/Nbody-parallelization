@@ -1,6 +1,9 @@
-package org;
+package org.Thread;
 import java.util.List;
 import java.util.Optional;
+
+import org.Body;
+import org.SimulationView;
 public class Barrier {
     private final double dt;
     private final int numThreads;

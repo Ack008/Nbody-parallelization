@@ -1,6 +1,9 @@
-package org;
+package org.Thread;
 
 import java.util.List;
+
+import org.Body;
+import org.InfiniteForceException;
 
 public class Worker extends Thread {
     private final List<Body> allBodies;
