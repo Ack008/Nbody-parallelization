@@ -60,6 +60,18 @@ public class ThreadNBodySimulation implements NBodySimulator {
         }
         return workers;
     }
+	public void initFixed(int nBodies) {
+		bodies = new ArrayList<Body>();
+		for (int i = 0; i < nBodies; i++) {
+			double x = -1.0 + 2.0 * i / nBodies;
+			double y = -1.0 + 2.0 * i / nBodies;
+			double vx = 0.0;
+			double vy = 0.0;
+			double m = 1 + i % 10;
+			Body b = new Body(i, new P2d(x, y), new V2d(vx, vy), 0.01, m);
+			bodies.add(b);
+		}
+	}
     public void execute(int numThreads, int maxSteps, double dt) {
 		if (view.isPresent()) {
 			view.get().init();
@@ -74,4 +86,5 @@ public class ThreadNBodySimulation implements NBodySimulator {
             }
         }
     }
+
 }

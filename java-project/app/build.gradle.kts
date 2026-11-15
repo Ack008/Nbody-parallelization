@@ -34,11 +34,11 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
 application {
     // Define the main class for the application.
-    mainClass = "org.Thread.SimulationThreadNoGUI"
+    mainClass = "org.ThreadPool.SimulationPoolNoGUI"
 }

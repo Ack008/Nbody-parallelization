@@ -6,7 +6,7 @@ import org.SimulationView;
 public class SimulationThreadWithGUI {
     static final int NUM_BODIES = 200;
     static final int NUM_THREADS = Runtime.getRuntime().availableProcessors() + 1;
-    static final int MAX_STEPS = 50000;
+    static final int MAX_STEPS = 5000;
     static final double DT = 0.01;
     public static void main(String[] args) {
         SimulationView view = new SimulationView(800,800);

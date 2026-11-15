@@ -6,9 +6,9 @@ package org.Thread;
 import org.NBodySimulator;
 
 public class SimulationThreadNoGUI {
-    static final int NUM_BODIES = 2000;
+    static final int NUM_BODIES = 100;
     static final int NUM_THREADS = Runtime.getRuntime().availableProcessors() + 1;
-    static final int MAX_STEPS = 100;
+    static final int MAX_STEPS = 5000;
     static final double DT = 0.01;
     public static void main(String[] args) {
         NBodySimulator simulation = new ThreadNBodySimulation();
@@ -18,7 +18,7 @@ public class SimulationThreadNoGUI {
         log("Starting simulation with " + NUM_BODIES + " bodies - " + MAX_STEPS + " steps...");
         simulation.execute(NUM_THREADS, MAX_STEPS, 0.01);
         long endTime = System.currentTimeMillis();
-        log("Simulation completed in " + (endTime - startTime) / 1000 + " seconds.");
+        log("Simulation completed in " + (endTime - startTime) + " ms.");
 
     }
     

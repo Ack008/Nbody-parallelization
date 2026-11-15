@@ -80,6 +80,7 @@ public class Body {
 
     private V2d computeGForceBy(Body b) throws InfiniteForceException {
         double dist = getDistanceFrom(b);
+        dist = Math.max(dist, getRadius() + b.getRadius()); // Avoid division by zero
         if (dist > 0) {
             try {
                 return new V2d(pos, b.getPos())

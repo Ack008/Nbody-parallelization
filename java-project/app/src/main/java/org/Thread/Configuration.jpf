@@ -1,0 +1,8 @@
+target = org.Thread.JpfSmallSimulation
+
+classpath=/home/sisco-jpf/build/classes/java/main
+
+listener=gov.nasa.jpf.listener.PreciseRaceDetector
+listener=gov.nasa.jpf.listener.DeadlockAnalyzer
+
+report.console.property_violation=error,trace
