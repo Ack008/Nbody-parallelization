@@ -22,5 +22,22 @@ public interface NBodySimulator {
      * @param dt The time step for each simulation update.
      */
     public void execute(int numThreads, int maxSteps, double dt);
+    /**
+     * Sets the view for the simulation, allowing for visualization of the simulation's state.
+     * @param view The SimulationView instance to be used for displaying the simulation.
+     */
+    public void setView(SimulationView view);
+    /**
+     * Starts the simulation, allowing it to run continuously until stopped.
+     */
+    public void start();
+    /**
+     * Stops the simulation, halting any ongoing updates and calculations.
+     */
+    public void stop();
+    /**
+     * Advances the simulation by one step.
+     */
+    public void nextStep();
 
 }

@@ -1,7 +1,7 @@
 package org.ThreadPool;
 import org.NBodySimulator;
 import org.SimulationView;
-public class SimulationPoolNoGUI {
+public class MainPoolNoGUI {
     private static final int NUM_BODIES = 100;
     private static final int MAX_STEPS = 5000;
     private static final double DT = 0.01;

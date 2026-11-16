@@ -9,8 +9,10 @@ public class SimulationThreadWithGUI {
     static final int MAX_STEPS = 5000;
     static final double DT = 0.01;
     public static void main(String[] args) {
-        SimulationView view = new SimulationView(800,800);
-        NBodySimulator simulation = new ThreadNBodySimulation(view);
+        NBodySimulator simulation = new ThreadNBodySimulation();
+        SimulationView view = new SimulationView(800,800, simulation);
+        simulation.setView(view);
+
         simulation.initRandom(NUM_BODIES);
         simulation.execute(NUM_THREADS, MAX_STEPS, 0.01);
     }

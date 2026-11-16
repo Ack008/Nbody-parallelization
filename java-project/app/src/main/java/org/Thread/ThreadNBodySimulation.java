@@ -86,5 +86,20 @@ public class ThreadNBodySimulation implements NBodySimulator {
             }
         }
     }
+	public void setView(SimulationView view) {
+		this.view = Optional.of(view);
+	}
+	    public void start() {
+        // Implementation for starting the simulation
+        throw new UnsupportedOperationException("Start method not implemented yet.");
+    }
+    public void stop() {
+        // Implementation for stopping the simulation
+        throw new UnsupportedOperationException("Stop method not implemented yet.");
+    }
+    public void nextStep() {
+        // Implementation for advancing the simulation by one step  
+        throw new UnsupportedOperationException("Next step method not implemented yet.");
+    }
 
 }

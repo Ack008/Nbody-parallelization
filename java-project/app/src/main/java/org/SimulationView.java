@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.JButton;
 
 /**
  * 
@@ -23,9 +24,11 @@ public class SimulationView {
     private VisualiserFrame frame;
     private long nFramesRendered;
     private long startTime;
+    private NBodySimulator simulation;
 
-    public SimulationView(int w, int h) {
-        frame = new VisualiserFrame(w, h);
+    public SimulationView(int w, int h, NBodySimulator simulation) {
+        frame = new VisualiserFrame(w, h, simulation);
+        this.simulation = simulation;
     }
 
     public void init() {
@@ -43,13 +46,24 @@ public class SimulationView {
     public static class VisualiserFrame extends JFrame {
 
         private VisualiserPanel panel;
+        private final JButton startButton;
+        private final JButton stopButton;
+        private final JButton nextStepButton;
+        private final NBodySimulator simulation;
 
-        public VisualiserFrame(int w, int h) {
+        public VisualiserFrame(int w, int h, NBodySimulator simulation) {
+            this.simulation = simulation;
+            startButton = new JButton("Start");
+            stopButton = new JButton("Stop");
+            nextStepButton = new JButton("Next Step");
             setTitle("Bodies Simulation");
             setSize(w, h);
             setResizable(false);
             panel = new VisualiserPanel(w, h);
             getContentPane().add(panel);
+            getContentPane().add(startButton, "North");
+            getContentPane().add(stopButton, "South");
+            getContentPane().add(nextStepButton, "East");
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
                     System.exit(-1);
@@ -58,6 +72,15 @@ public class SimulationView {
                 public void windowClosed(WindowEvent ev) {
                     System.exit(-1);
                 }
+            });
+            startButton.addActionListener(e -> {
+                simulation.start();
+            });
+            stopButton.addActionListener(e -> {
+                simulation.stop();
+            });
+            nextStepButton.addActionListener(e -> {
+                simulation.nextStep();
             });
             this.setVisible(true);
         }
@@ -84,7 +107,7 @@ public class SimulationView {
         private long nIter;
         private int framePerSec = 0;
         private double vt;
-        private double scale = 1;
+        private double scale = 3;
 
         private long dx;
         private long dy;
