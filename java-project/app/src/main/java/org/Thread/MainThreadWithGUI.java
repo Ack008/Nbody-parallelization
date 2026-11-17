@@ -15,6 +15,7 @@ public class MainThreadWithGUI {
 
         simulation.initRandom(NUM_BODIES);
         simulation.execute(NUM_THREADS, MAX_STEPS, 0.01);
+        view.shutdown();
     }
     
     private static void log(String msg) {

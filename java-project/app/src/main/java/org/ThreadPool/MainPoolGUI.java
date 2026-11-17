@@ -13,6 +13,7 @@ public class MainPoolGUI {
         simulation.setView(view);
         simulation.initRandom(NUM_BODIES);
         simulation.execute(NUM_THREADS, MAX_STEPS, DT);
+        view.shutdown();
     }
     private static void log(String message) {
         System.out.println(message);

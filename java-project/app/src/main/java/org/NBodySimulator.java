@@ -39,5 +39,9 @@ public interface NBodySimulator {
      * Advances the simulation by one step.
      */
     public void nextStep();
+    /**
+     * Suspends the simulation, pausing any ongoing updates and calculations.
+     */
+    public void suspend();
 
 }

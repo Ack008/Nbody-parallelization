@@ -20,8 +20,7 @@ public class Worker extends Thread {
     public void run() {
         double dt = monitor.getDt();
         int maxSteps = monitor.getMaxSteps();
-        int currentStep = monitor.getCurrentStep();
-        while (currentStep < maxSteps) {
+        while (monitor.getCurrentStep() < maxSteps) {
             if (monitor.isPaused()) {
                 continue; // Skip the rest of the loop and check the isPaused flag again
             }
@@ -39,8 +38,11 @@ public class Worker extends Thread {
             }
             monitor.waitAllUpdating();
             
-            currentStep = monitor.getCurrentStep();
+            if (monitor.hasToStop()) {
+                break; // Exit the loop if stop is requested
+            }
         }
+        log("Worker " + Thread.currentThread().getId() + " finished execution.");
     }
 
     private synchronized void log(String msg) {

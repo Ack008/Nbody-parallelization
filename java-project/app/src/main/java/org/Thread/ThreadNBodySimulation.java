@@ -98,11 +98,13 @@ public class ThreadNBodySimulation implements NBodySimulator {
 		monitor.setPaused(false);
     }
     public void stop() {
-        monitor.setPaused(true);
+        monitor.stop();
     }
     public void nextStep() {
 		monitor.oneStep();
-
     }
+	public void suspend() {
+		monitor.setPaused(true);
+	}
 
 }

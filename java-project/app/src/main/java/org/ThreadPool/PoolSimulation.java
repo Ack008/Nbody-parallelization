@@ -32,6 +32,7 @@ public class PoolSimulation implements NBodySimulator {
 
     private volatile boolean isRunning = true;
     private volatile boolean oneStep = false;
+    private volatile boolean hasToStop = false;
     private final Lock lock ;
     public PoolSimulation() {
         lock = new ReentrantLock();
@@ -102,6 +103,14 @@ public class PoolSimulation implements NBodySimulator {
                 }finally{
                     lock.unlock();
                 }
+                try{
+                    lock.lock();
+                    if (hasToStop) {
+                        break; // Exit the loop if stop is requested
+                    }
+                }finally{
+                    lock.unlock();
+                }
             }
         } catch (Exception e) {
             System.err.println("Error occurred during simulation: " + e.getMessage());
@@ -162,7 +171,7 @@ public class PoolSimulation implements NBodySimulator {
     public void stop() {
         try{
             lock.lock();
-            isRunning = false;
+            hasToStop = true;
         }finally{
             lock.unlock();
         }
@@ -174,6 +183,15 @@ public class PoolSimulation implements NBodySimulator {
                 oneStep = true;
                 isRunning = true;
             }
+        }finally{
+            lock.unlock();
+        }
+    }
+
+    public void suspend() {
+        try{
+            lock.lock();
+            isRunning = false;
         }finally{
             lock.unlock();
         }

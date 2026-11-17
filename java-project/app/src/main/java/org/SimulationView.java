@@ -51,6 +51,7 @@ public class SimulationView {
         private VisualiserPanel panel;
         private final JButton startButton;
         private final JButton stopButton;
+        private final JButton suspendButton;
         private final JButton nextStepButton;
         private final NBodySimulator simulation;
 
@@ -58,6 +59,7 @@ public class SimulationView {
             this.simulation = simulation;
             startButton = new JButton("Start");
             stopButton = new JButton("Stop");
+            suspendButton = new JButton("Suspend");
             nextStepButton = new JButton("Next Step");
             setTitle("Bodies Simulation");
             setSize(w, h);
@@ -66,7 +68,8 @@ public class SimulationView {
             getContentPane().add(panel);
             getContentPane().add(startButton, "North");
             getContentPane().add(stopButton, "South");
-            getContentPane().add(nextStepButton, "East");
+            getContentPane().add(nextStepButton, "West");
+            getContentPane().add(suspendButton, "East");
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
                     System.exit(-1);
@@ -84,6 +87,9 @@ public class SimulationView {
             });
             nextStepButton.addActionListener(e -> {
                 simulation.nextStep();
+            });
+            suspendButton.addActionListener(e -> {
+                simulation.suspend();
             });
             this.setVisible(true);
         }

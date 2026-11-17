@@ -15,6 +15,7 @@ public class Monitor {
     private final List<Body> bodies;
     private boolean isPaused = false;
     private boolean oneStep = false;
+    private boolean hasToStop = false;
 
     public Monitor(List<Body> bodies, int numThreads, int maxSteps, double dt) {
         this(bodies, numThreads, maxSteps, dt, Optional.empty());
@@ -55,7 +56,7 @@ public class Monitor {
             }
             notifyAll();
         } else {
-            while (updatesCompleted < numThreads) {
+            while (updatesCompleted < numThreads && !hasToStop) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -70,7 +71,7 @@ public class Monitor {
             updatesCompleted = 0;
             notifyAll();
         } else {
-            while (forcesCalculated < numThreads) {
+            while (forcesCalculated < numThreads && !hasToStop) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -92,5 +93,12 @@ public class Monitor {
             oneStep = true;
             isPaused = false; // Resume the simulation for one step
         }
+    }
+    public synchronized void stop() {
+        hasToStop = true;
+        notifyAll();
+    }
+    public synchronized boolean hasToStop() {
+        return hasToStop;
     }
 }
