@@ -42,7 +42,6 @@ public class Worker extends Thread {
                 break; // Exit the loop if stop is requested
             }
         }
-        log("Worker " + Thread.currentThread().getId() + " finished execution.");
     }
 
     private synchronized void log(String msg) {

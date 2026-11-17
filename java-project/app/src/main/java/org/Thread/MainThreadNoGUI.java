@@ -3,25 +3,32 @@
  */
 package org.Thread;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.NBodySimulator;
 
 public class MainThreadNoGUI {
-    static final int NUM_BODIES = 100;
-    static final int NUM_THREADS = Runtime.getRuntime().availableProcessors() + 1;
+    static final int NUM_BODIES = 300;
+    static final int NUM_THREADS = 10;
     static final int MAX_STEPS = 5000;
     static final double DT = 0.01;
     public static void main(String[] args) {
         NBodySimulator simulation = new ThreadNBodySimulation();
 
         simulation.initRandom(NUM_BODIES);
+        List<Integer> threads = Arrays.asList(1, 2, 4, 8, 10, 12,13, 16, 24);
+        for (int numThreads : threads) {
+            runSimulation(simulation, numThreads);
+        }
+    }
+    private static void runSimulation(NBodySimulator simulation, int numThreads) {
         long startTime = System.currentTimeMillis();
-        log("Starting simulation with " + NUM_BODIES + " bodies - " + MAX_STEPS + " steps...");
-        simulation.execute(NUM_THREADS, MAX_STEPS, 0.01);
+        log("Starting simulation with "+ numThreads + " threads - " + NUM_BODIES + " bodies - " + MAX_STEPS + " steps...");
+        simulation.execute(numThreads, MAX_STEPS, 0.01);
         long endTime = System.currentTimeMillis();
         log("Simulation completed in " + (endTime - startTime) + " ms.");
-
     }
-    
     private static void log(String msg) {
         System.out.println("[" + System.currentTimeMillis() + "] " + msg);
     }

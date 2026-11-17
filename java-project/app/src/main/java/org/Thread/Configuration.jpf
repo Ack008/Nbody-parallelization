@@ -4,8 +4,5 @@ classpath=/home/sisco-jpf/build/classes/java/main
 
 listener=gov.nasa.jpf.listener.PreciseRaceDetector
 listener=gov.nasa.jpf.listener.DeadlockAnalyzer
-log.level=info
-report.console.show_steps=true
-report.console.show_location=true
-report.console.show_method=true
+
 report.console.property_violation=error,trace
