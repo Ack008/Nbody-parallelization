@@ -22,6 +22,9 @@ public class ThreadNBodySimulation implements NBodySimulator {
 
 	/* virtual time step */
 	double dt;
+	private int numThreads;
+	private int maxSteps;
+	private Monitor monitor;
 
 	public ThreadNBodySimulation(SimulationView view) {
 		this.view = Optional.of(view);
@@ -48,7 +51,7 @@ public class ThreadNBodySimulation implements NBodySimulator {
 			bodies.add(b);
 		}
 	}
-    private List<Worker> getWorkers(int numThreads, Barrier barrier) {
+    private List<Worker> getWorkers(int numThreads, Monitor barrier) {
         List<Worker> workers = new ArrayList<>();
         int bodiesPerThread = bodies.size() / numThreads;
         for (int i = 0; i < numThreads; i++) {
@@ -76,7 +79,9 @@ public class ThreadNBodySimulation implements NBodySimulator {
 		if (view.isPresent()) {
 			view.get().init();
 		}
-        List<Worker> workers = getWorkers(numThreads, new Barrier(bodies, numThreads, maxSteps, dt, view));
+		monitor = new Monitor(bodies, numThreads, maxSteps, dt, view);
+		monitor.setPaused(false); // Start the simulation in a running stateq
+        List<Worker> workers = getWorkers(numThreads, monitor);
         workers.forEach(i -> i.start());
         for (Worker worker : workers) {
             try {
@@ -89,17 +94,15 @@ public class ThreadNBodySimulation implements NBodySimulator {
 	public void setView(SimulationView view) {
 		this.view = Optional.of(view);
 	}
-	    public void start() {
-        // Implementation for starting the simulation
-        throw new UnsupportedOperationException("Start method not implemented yet.");
+	public void start() {
+		monitor.setPaused(false);
     }
     public void stop() {
-        // Implementation for stopping the simulation
-        throw new UnsupportedOperationException("Stop method not implemented yet.");
+        monitor.setPaused(true);
     }
     public void nextStep() {
-        // Implementation for advancing the simulation by one step  
-        throw new UnsupportedOperationException("Next step method not implemented yet.");
+		monitor.oneStep();
+
     }
 
 }

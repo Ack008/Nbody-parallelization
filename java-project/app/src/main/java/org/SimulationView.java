@@ -42,6 +42,9 @@ public class SimulationView {
         int framePerSec = (int) ((((double) nFramesRendered) / dt) * 1000);
         frame.display(bodies, vt, iter, framePerSec);
     }
+    public void shutdown() {
+        frame.dispose();
+    }
 
     public static class VisualiserFrame extends JFrame {
 

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.Body;
 import org.SimulationView;
-public class Barrier {
+public class Monitor {
     private final double dt;
     private final int numThreads;
     private int currentStep;
@@ -12,14 +12,14 @@ public class Barrier {
     private int forcesCalculated;
     private int updatesCompleted;
     private final Optional<SimulationView> view;
-
     private final List<Body> bodies;
+    private boolean isPaused = false;
+    private boolean oneStep = false;
 
-
-    public Barrier(List<Body> bodies, int numThreads, int maxSteps, double dt) {
+    public Monitor(List<Body> bodies, int numThreads, int maxSteps, double dt) {
         this(bodies, numThreads, maxSteps, dt, Optional.empty());
     }
-    public Barrier(List<Body> bodies, int numThreads, int maxSteps, double dt, Optional<SimulationView> view) {
+    public Monitor(List<Body> bodies, int numThreads, int maxSteps, double dt, Optional<SimulationView> view) {
         this.numThreads = numThreads;
         this.maxSteps = maxSteps;
         this.currentStep = 0;
@@ -49,6 +49,10 @@ public class Barrier {
             if (view.isPresent()) {
                 view.get().display(bodies, dt, currentStep);
             }
+            if (oneStep) {
+                isPaused = true; // Pause the simulation after one step
+                oneStep = false; // Reset the oneStep flag
+            }
             notifyAll();
         } else {
             while (updatesCompleted < numThreads) {
@@ -75,5 +79,18 @@ public class Barrier {
             }
         }
 
+    }
+    public synchronized void setPaused(boolean paused) {
+        isPaused = paused;
+    }
+    public synchronized boolean isPaused() {
+        return isPaused;
+    }
+
+    public synchronized void oneStep() {
+        if (isPaused) {
+            oneStep = true;
+            isPaused = false; // Resume the simulation for one step
+        }
     }
 }

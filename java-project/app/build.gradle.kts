@@ -40,5 +40,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.ThreadPool.MainPoolGUI"
+    mainClass = "org.Thread.MainThreadNoGUI"
 }

@@ -5,12 +5,12 @@ package org.example;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.Thread.SimulationThreadNoGUI;
+import org.Thread.MainThreadNoGUI;
 import org.junit.Test;
 
 public class AppTest {
     
     @Test public void appHasAGreeting() {
-        SimulationThreadNoGUI classUnderTest = new SimulationThreadNoGUI();
+        MainThreadNoGUI classUnderTest = new MainThreadNoGUI();
     }
 }

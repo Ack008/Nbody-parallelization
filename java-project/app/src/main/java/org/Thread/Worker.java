@@ -8,20 +8,23 @@ import org.InfiniteForceException;
 public class Worker extends Thread {
     private final List<Body> allBodies;
     private final List<Body> assignedBodies;
-    private final Barrier barrier;
+    private final Monitor monitor;
 
-    public Worker(Barrier barrier, List<Body> assignedBodies, List<Body> allBodies) {
+    public Worker(Monitor monitor, List<Body> assignedBodies, List<Body> allBodies) {
         this.allBodies = allBodies;
         this.assignedBodies = assignedBodies;
-        this.barrier = barrier;
+        this.monitor = monitor;
     }
 
     @Override
     public void run() {
-        double dt = barrier.getDt();
-        int maxSteps = barrier.getMaxSteps();
-        int currentStep = barrier.getCurrentStep();
+        double dt = monitor.getDt();
+        int maxSteps = monitor.getMaxSteps();
+        int currentStep = monitor.getCurrentStep();
         while (currentStep < maxSteps) {
+            if (monitor.isPaused()) {
+                continue; // Skip the rest of the loop and check the isPaused flag again
+            }
             for (Body body : assignedBodies) {
                 try {
                     body.calculateTotalForce(allBodies, dt);
@@ -29,13 +32,14 @@ public class Worker extends Thread {
                     e.printStackTrace();
                 }
             }
-            barrier.waitAllForceCalculations();
+            monitor.waitAllForceCalculations();
             //log("Worker " + Thread.currentThread().threadId() + " completed force calculations for step " + currentStep);
             for (Body body : assignedBodies) {
                 body.update(dt);
             }
-            barrier.waitAllUpdating();
-            currentStep = barrier.getCurrentStep();
+            monitor.waitAllUpdating();
+            
+            currentStep = monitor.getCurrentStep();
         }
     }
 
