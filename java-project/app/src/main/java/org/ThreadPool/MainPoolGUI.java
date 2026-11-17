@@ -3,7 +3,7 @@ package org.ThreadPool;
 import org.NBodySimulator;
 import org.SimulationView;
 public class MainPoolGUI {
-     private static final int NUM_BODIES = 6;
+     private static final int NUM_BODIES = 20;
     private static final int MAX_STEPS = 5000;
     private static final double DT = 0.01;
     private static final int NUM_THREADS = Runtime.getRuntime().availableProcessors() + 1;

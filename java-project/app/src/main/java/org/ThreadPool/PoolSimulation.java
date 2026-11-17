@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.*;
 import java.util.ArrayList;
 import java.util.List;
 public class PoolSimulation implements NBodySimulator {
@@ -31,7 +32,9 @@ public class PoolSimulation implements NBodySimulator {
 
     private volatile boolean isRunning = true;
     private volatile boolean oneStep = false;
+    private final Lock lock ;
     public PoolSimulation() {
+        lock = new ReentrantLock();
         this.view = Optional.empty();
     }
     public void setView(SimulationView view) {
@@ -73,12 +76,16 @@ public class PoolSimulation implements NBodySimulator {
         }
         try{
             while (currentStep < maxSteps){
-                if (oneStep) {
-                    isRunning = true; // Resume the simulation for one step
-                }
-                if (!isRunning) {
-                    Thread.sleep(100); // Sleep for a short duration to avoid busy waiting
-                    continue; // Skip the rest of the loop and check the isRunning flag again
+                try{
+                    lock.lock();
+                    if (oneStep) {
+                        isRunning = true; // Resume the simulation for one step
+                    }
+                    if (!isRunning) {
+                        continue; // Skip the rest of the loop and check the isRunning flag again
+                    }
+                }finally{
+                    lock.unlock();
                 }
                 calculateForces(dt, executor);
                 updateBodies(dt, executor);
@@ -86,9 +93,14 @@ public class PoolSimulation implements NBodySimulator {
                     view.get().display(bodies,dt, currentStep);
                 }
                 currentStep++;
-                if (oneStep) {
-                    isRunning = false; // Pause the simulation after one step
-                    oneStep = false; // Reset the oneStep flag
+                try{
+                    lock.lock();
+                    if (oneStep) {
+                        isRunning = false; // Pause the simulation after one step
+                        oneStep = false; // Reset the oneStep flag
+                    }
+                }finally{
+                    lock.unlock();
                 }
             }
         } catch (Exception e) {
@@ -139,16 +151,31 @@ public class PoolSimulation implements NBodySimulator {
         futures.clear();
     }
     public void start() {
-        oneStep = false;
-        isRunning = true;
+        try{
+            lock.lock();
+            isRunning = true;
+            oneStep = false;
+        }finally{
+            lock.unlock();
+        }
     }
     public void stop() {
-        isRunning = false;
+        try{
+            lock.lock();
+            isRunning = false;
+        }finally{
+            lock.unlock();
+        }
     }
     public void nextStep() {
-        if (!isRunning) {
-            oneStep = true;
-            isRunning = true;
+        try{
+            lock.lock();
+            if (!isRunning) {
+                oneStep = true;
+                isRunning = true;
+            }
+        }finally{
+            lock.unlock();
         }
     }
     private synchronized void log(String message) {
